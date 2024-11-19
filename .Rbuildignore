@@ -1,2 +1,4 @@
 ^lm\.lsa\.Rproj$
 ^\.Rproj\.user$
+^ignoreCode$
+^data-raw$
