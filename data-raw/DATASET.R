@@ -162,7 +162,7 @@ l.data <- lapply(1:length(list.folders), function(i){
   dat[dat$GIRL %in% 9,"GIRL"] <- NA
 
   dat[,c("YEAR","IDCNTRY","IDSCHOOL","IDSTUD","TOTWGT","JKZONE","JKREP",
-         "PRESCH","LANG","GIRL",achvars)]
+         "PRESCH","LANG","GIRL","EARLYLIT","EARLYNUM",achvars)]
 })
 
 # Select countries with more than 1 participation
@@ -213,5 +213,19 @@ l.reduced.data <- lapply(l.data, function(data){
 })
 
 mini_pirls <- do.call(bind_rows,l.reduced.data)
+
+# Remove the tibble characteristics to avoid errors
+# Function .untidy from tucuyricuy package
+# Since tucuyricuy is private package, added here
+# with permission from Andrés Christiansen
+
+.untidy <- function(x){
+  out <- x
+  out <- lapply(1:ncol(x),function(X){as.vector(out[,X,drop = TRUE])})
+  out <- do.call(cbind.data.frame,out)
+  colnames(out) <- colnames(x)
+  out
+}
+mini_pirls <- .untidy(mini_pirls)
 
 usethis::use_data(mini_pirls, overwrite = TRUE)

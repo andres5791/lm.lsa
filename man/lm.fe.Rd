@@ -4,14 +4,34 @@
 \alias{lm.fe}
 \title{Linear regression with fixed-effects}
 \usage{
-lm.fe(formula = y ~ x, data, demean.data = NULL, wgt = NULL, fevar, ...)
+lm.fe(formula = y ~ x, data, wgt = NULL, fevar, ...)
 }
 \arguments{
-\item{...}{}
+\item{formula}{model formula}
+
+\item{data}{a dataframe}
+
+\item{wgt}{a string indicating the column in the data with the total weights}
+
+\item{fevar}{a string indicating the column(s) in the data with the variables
+used as fixed-effects. Supports 1 or more. If NULL, then there is no fixed-effect adjustment}
+
+\item{...}{additional options passed to lm(), not working right now}
 }
 \value{
 A lm() object
 }
 \description{
-Linear regression with fixed-effects
+Run regression analyses with fixed-effects.
+Does not support factor() and interactions yet.
+}
+\examples{
+
+example.fe <- lm.fe(ASMMAT01 ~ 1 + PRESCH + LANG,
+                    data = mini_timss,
+                    wgt = "SENWGT",
+                    fevar = c("YEAR","IDCNTRY"
+                    )
+summary(example.fe)
+
 }

@@ -9,20 +9,30 @@
 
 #' Linear regression with fixed-effects
 #'
-#' @param formula
-#' @param data
-#' @param demean.data
-#' @param wgt
-#' @param fevar
-#' @param ...
+#' Run regression analyses with fixed-effects.
+#' Does not support factor() and interactions yet.
+#'
+#' @param formula model formula
+#' @param data a dataframe
+#' @param wgt a string indicating the column in the data with the total weights
+#' @param fevar a string indicating the column(s) in the data with the variables
+#' used as fixed-effects. Supports 1 or more. If NULL, then there is no fixed-effect adjustment
+#' @param ... additional options passed to lm(), not working right now
 #'
 #' @return A lm() object
 #' @export
 #'
 #' @examples
+#'
+#' example.fe <- lm.fe(ASMMAT01 ~ 1 + PRESCH + LANG,
+#'                     data = mini_timss,
+#'                     wgt = "SENWGT",
+#'                     fevar = c("YEAR","IDCNTRY"
+#'                     )
+#' summary(example.fe)
+#'
 lm.fe <- function(formula = y ~ x,
                   data,
-                  demean.data=NULL,
                   wgt=NULL,
                   fevar,
                   ...){

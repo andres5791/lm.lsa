@@ -4,10 +4,61 @@
 ## Description
 ## Run lm() using replicate weights, supports lm.fe() and lm()
 ## Return: summary(lm()) object
-## dependencies: dplyr,khipu
+## dependencies: dplyr
 ## Last modified: 2024-11-18
 #===============================================================================
 
+#' Title
+#'
+#' @param formula model formula
+#' @param data a data frame
+#' @param wgt a string indicating the column in the data with the total weights
+#' @param fevar a string indicating the column(s) in the data with the variables
+#' used as fixed-effects. Supports 1 or more. If NULL, then there is no fixed-effect adjustment
+#' @param rwgts a vector of strings indicating the names of the replicate weights variables
+#'  (e.g., if 150 replicates are wanted, then the vector must be length 150)
+#' @param study a string indicating study, supports: 'TIMSS', 'PIRLS','ICILS',"ICCS', and 'PISA'
+#' @param ncores indicate desired number of cores used for processing.
+#'  1 for no parallel processing.
+#'  If NULL (default), the estimation will use half of the logical cores available
+#' @param benchmark TRUE if want to estimate the time used per each plausible value estimation
+#' @param asList if FALSE (default), returns summary() of the regression
+#' if TRUE, return a list with some original lm() elements (such as the dataframe)
+#'
+#' @return a summary.lm() object
+#' @export
+#'
+#' @import tictoc parallel
+#'
+#' @examples
+#'
+#' # Example without fixed-effects, dependent variable 1st plausible value
+#' library(dplyr)
+#' data.deu.2011 <- mini_pirls[mini_pirls$YEAR %in% "2011" &
+#'                             mini_pirls$IDCNTRY %in% 276,]
+#' example1 <- lm.rep(ASRREA01 ~ 1 + PRESCH, # formula
+#'                       data=data.deu.2011, # example data
+#'                       wgt="SENWGT", # weight: senate weights
+#'                       fevar=NULL, # no fixed-effects
+#'                       rwgts=paste0("RWGT",1:150), # name of replicate weights
+#'                       ncores=NULL, # automatic ncores
+#'                       study="PIRLS"
+#' )
+#'print(example1)
+#'
+#'
+#' # Example with time and country fixed-effects, dependent variable 1st plausible value
+#' example2 <- lm.lsa(ASRREA01 ~ 1 + PRESCH, # formula
+#'                       data=mini_pirls, # example data
+#'                       wgt="SENWGT", # weight: senate weights
+#'                       fevar=c("YEAR","IDCNTRY"), # fixed-effects variables
+#'                       rwgts=paste0("RWGT",1:150), # name of replicate weights
+#'                       ncores=NULL, # automatic ncores
+#'                       study="PIRLS"
+#' )
+#'print(example2)
+#'
+#'
 lm.rep <- function(
     formula=y~x,
     data,
@@ -19,6 +70,14 @@ lm.rep <- function(
     benchmark=TRUE,
     asList=FALSE
 ){
+  if(benchmark) if(!require(tictoc)) stop("if benchmark requires tictoc package installed")
+  if(is.null(ncores)){
+    library(parallel)
+  } else {
+    if(ncores>1) library(parallel)
+  }
+  library(dplyr)
+
   error.if.factor(formula)
 
   # Capture variables
@@ -45,7 +104,7 @@ lm.rep <- function(
 
   # Estimate replicated weights
   if(ncores %in% c(0,1,NA)){
-    if(benchmark) tic("No parallel processing (cores available = 1)")
+    if(benchmark) tictoc::tic("No parallel processing (cores available = 1)")
 
     # Remove the tibble characteristics to avoid errors
     # Function .untidy from tucuyricuy package
@@ -77,21 +136,13 @@ lm.rep <- function(
         )
       }
     })
-    if(benchmark) toc()
+    if(benchmark) tictoc::toc()
   } else {
     # Calculate replicates per weight, parallel
     message("Number of cores used: ",ncores)
 
-    if(benchmark) tic("With parallel processing")
+    if(benchmark) tictoc::tic("With parallel processing")
     # Remove the tibble characteristics to avoid errors
-    # Function .untidy from tucuyricuy package
-    # added here with permission from Andrés Christiansen
-    .untidy <- function(x){
-      out <- x
-      out <- lapply(1:ncol(x),function(X){as.vector(out[,X,drop = TRUE])})
-      out <- do.call(cbind.data.frame,out)
-      colnames(out) <- colnames(x)
-      out }
     # In addition, select only needed columns to use less RAM
     mat <- .untidy(data)[,c(fevar,depvar,indvar,wgt,rwgts)]
 
@@ -122,7 +173,7 @@ lm.rep <- function(
       }
     })
     stopCluster(cl)
-    if(benchmark) toc()
+    if(benchmark) tictoc::toc()
   }
 
   ## Calculate sampling variance
@@ -161,6 +212,7 @@ lm.rep <- function(
   reg$call$nrep <- round(as.numeric(length(regs)),0)
   reg$call[[1]] <- as.name("lm.rep")
   names(reg$call)[which(names(reg$call) %in% "weights")] <- "wgt"
+  reg$call$wgt <- wgt
 
   sum_reg <- summary(reg)
 

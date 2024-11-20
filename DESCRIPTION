@@ -13,7 +13,8 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
 URL: https://github.com/andres5791/lm.lsa
 BugReports: https://github.com/andres5791/lm.lsa/issues
-Imports: dplyr
+Imports: 
+  dplyr,tictoc,parallel
 Depends: 
     R (>= 2.10)
 LazyData: true
