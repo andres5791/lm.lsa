@@ -1,4 +1,4 @@
-# lm.lsa
+# lm.lsa (EXTREMELY preliminary version! Use with caution)
 
 <!-- badges: start -->
 
