@@ -28,9 +28,9 @@ Does not support factor() and interactions yet.
 \examples{
 
 example.fe <- lm.fe(ASMMAT01 ~ 1 + PRESCH + LANG,
-                    data = mini_timss,
+                    data = mini_pirls,
                     wgt = "SENWGT",
-                    fevar = c("YEAR","IDCNTRY"
+                    fevar = c("YEAR","IDCNTRY")
                     )
 summary(example.fe)
 

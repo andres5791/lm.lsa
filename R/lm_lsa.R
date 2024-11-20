@@ -36,10 +36,10 @@
 #' @examples
 #'
 #' # Example without fixed-effects
-#' data.deu.2011 <- mini_pirls[mini_pirls$YEAR %in% "2011" &
-#'                             mini_pirls$IDCNTRY %in% 276,]
+#' data.fin.2011 <- mini_pirls[mini_pirls$YEAR %in% "2011" &
+#'                             mini_pirls$IDCNTRY %in% 246,]
 #' example1 <- lm.lsa(ASRREA ~ 1 + PRESCH, # formula
-#'                       data=data.deu.2011, # example data
+#'                       data=data.fin.2011, # example data
 #'                       wgt="SENWGT", # weight: senate weights
 #'                       fevar=NULL, # no fixed-effects
 #'                       rwgts=paste0("RWGT",1:150), # name of replicate weights

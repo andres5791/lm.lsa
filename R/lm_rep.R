@@ -34,17 +34,17 @@
 #'
 #' # Example without fixed-effects, dependent variable 1st plausible value
 #' library(dplyr)
-#' data.deu.2011 <- mini_pirls[mini_pirls$YEAR %in% "2011" &
-#'                             mini_pirls$IDCNTRY %in% 276,]
+#' data.fin.2011 <- mini_pirls[mini_pirls$YEAR %in% "2011" &
+#'                             mini_pirls$IDCNTRY %in% 246,]
 #' example1 <- lm.rep(ASRREA01 ~ 1 + PRESCH, # formula
-#'                       data=data.deu.2011, # example data
+#'                       data=data.fin.2011, # example data
 #'                       wgt="SENWGT", # weight: senate weights
 #'                       fevar=NULL, # no fixed-effects
 #'                       rwgts=paste0("RWGT",1:150), # name of replicate weights
 #'                       ncores=NULL, # automatic ncores
 #'                       study="PIRLS"
-#' )
-#'print(example1)
+#'                       )
+#' print(example1)
 #'
 #'
 #' # Example with time and country fixed-effects, dependent variable 1st plausible value
@@ -55,8 +55,8 @@
 #'                       rwgts=paste0("RWGT",1:150), # name of replicate weights
 #'                       ncores=NULL, # automatic ncores
 #'                       study="PIRLS"
-#' )
-#'print(example2)
+#'                       )
+#' print(example2)
 #'
 #'
 lm.rep <- function(

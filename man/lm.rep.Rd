@@ -49,16 +49,17 @@ Title
 \examples{
 
 # Example without fixed-effects, dependent variable 1st plausible value
-data.deu.2011 <- mini_pirls[mini_pirls$YEAR \%in\% "2011" &
-                            mini_pirls$IDCNTRY \%in\% 276,]
+library(dplyr)
+data.fin.2011 <- mini_pirls[mini_pirls$YEAR \%in\% "2011" &
+                            mini_pirls$IDCNTRY \%in\% 246,]
 example1 <- lm.rep(ASRREA01 ~ 1 + PRESCH, # formula
-                      data=data.deu.2011, # example data
+                      data=data.fin.2011, # example data
                       wgt="SENWGT", # weight: senate weights
                       fevar=NULL, # no fixed-effects
                       rwgts=paste0("RWGT",1:150), # name of replicate weights
                       ncores=NULL, # automatic ncores
                       study="PIRLS"
-)
+                      )
 print(example1)
 
 
@@ -70,7 +71,7 @@ example2 <- lm.lsa(ASRREA01 ~ 1 + PRESCH, # formula
                       rwgts=paste0("RWGT",1:150), # name of replicate weights
                       ncores=NULL, # automatic ncores
                       study="PIRLS"
-)
+                      )
 print(example2)
 
 

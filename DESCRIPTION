@@ -6,8 +6,7 @@ Authors@R:
     role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-5613-8338"))
 Description: Linear regression (based on lm()) using replicate weights and combining plausible values, based on IEA large-scale assessments and PISA.
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+License: file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
