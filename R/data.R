@@ -1,0 +1,26 @@
+#' PIRLS 2001-2016
+#'
+#' A subset of data (20 randomly selected schools per cycle-country) from PIRLS 2001, 2006, 2011, and 2016.
+#'
+#' @format ## `mini_pirls`
+#' A data frame with 66,610 rows and 173 columns:
+#' \describe{
+#'   \item{YEAR}{Cycle of PIRLS}
+#'   \item{IDCNTRY}{3-letter ISO country code (for benchmarking participants, use IEA internal codes)}
+#'   \item{IDSCHOOL}{ID school within country}
+#'   \item{IDSTUD}{ID of student within country}
+#'   \item{JKZONE}{Sampling zone}
+#'   \item{JKREP}{Replicate code}
+#'   \item{PRESCH}{1 = attended more than 1 year to pre-school}
+#'   \item{LANG}{1 = never speak language of test at home}
+#'   \item{LANGUAGE}{0 = always speak language of test at home, 1 = sometimes, 2 = never}
+#'   \item{GIRL}{1 = girl}
+#'   \item{EARLYLIT}{Scale of early activities on reading befores school (only 2011)}
+#'   \item{EARLYNUM}{Scale of early activities on numeracy before school (only 2011)}
+#'   \item{ASRREA01 - ASRREA05}{Reading score}
+#'   \item{ASMMAT01 - ASMMAT05}{Mathematics score (only 2011)}
+#'   \item{SENWGT}{Senate weight (all countries have same weight)}
+#'   \item{RGWGT1 - RGWT150}{Replicate weights 1 to 150}
+#' }
+#' @source Own elaboration, data downloaded from <https://www.iea.nl/data-tools/repository>
+"mini_pirls"

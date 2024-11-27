@@ -30,6 +30,8 @@
 #'  If NULL (default), the estimation will use half of the logical cores available
 #' @param benchmark TRUE if want to estimate the time used per each plausible value estimation
 #'
+#' @importFrom stats pt
+#'
 #' @return a summary.lm() object
 #' @export
 #'
@@ -44,7 +46,7 @@
 #'                       fevar=NULL, # no fixed-effects
 #'                       rwgts=paste0("RWGT",1:150), # name of replicate weights
 #'                       pvs=list(ASRREA=paste0("ASRREA0",1:5)), # list with PVs variables
-#'                       ncores=NULL, # automatic ncores
+#'                       ncores=2,
 #'                       study="PIRLS"
 #' )
 #'print(example1)
@@ -57,7 +59,7 @@
 #'                       fevar=c("YEAR","IDCNTRY"), # fixed-effects variables
 #'                       rwgts=paste0("RWGT",1:150), # name of replicate weights
 #'                       pvs=list(ASRREA=paste0("ASRREA0",1:5)), # list with PVs variables
-#'                       ncores=NULL, # automatic ncores
+#'                       ncores=2,
 #'                       study="PIRLS"
 #' )
 #'print(example2)
@@ -81,7 +83,7 @@ lm.lsa <- function(
   # Capture variables
   depvar <- as.character(formula[[2]])
   if(length(depvar)>1) stop("Only one dependent variable supported")
-  indvar <- attr(terms(formula), "term.labels")
+  indvar <- attr(stats::terms(formula), "term.labels")
 
   # Make sure PVs are correctly specified
   if(!is.list(pvs)) stop("Argument pvs must be a named list")
@@ -130,13 +132,13 @@ lm.lsa <- function(
 
     if(length(pv_depvar) > 0) { for(k in 1:length(pv_depvar)){
       new_pv_var <- pvs[[pv_depvar[k]]][i]
-      new_formula <- as.formula(gsub(pv_depvar[k],
+      new_formula <- stats::as.formula(gsub(pv_depvar[k],
                                      new_pv_var,
                                      deparse(new_formula)))
     }}
     if(length(pv_indvar) > 0) { for(k in 1:length(pv_indvar)){
       new_pv_var <- pvs[[pv_indvar[k]]][i]
-      new_formula <- as.formula(gsub(pv_indvar[k],
+      new_formula <- stats::as.formula(gsub(pv_indvar[k],
                                      new_pv_var,
                                      deparse(new_formula)))
     }}
@@ -201,7 +203,7 @@ lm.lsa <- function(
   f_stat <- mean(unlist(lapply(sum_regpvs,
                                function(x) x$fstatistic[[1]])))
   sum_reg$fstatistic <- c(value = f_stat, numdf = df_model, dendf = df_residual)
-  sum_reg$fstatistic_pval <- pf(f_stat, df_model, df_residual, lower.tail = FALSE)
+  sum_reg$fstatistic_pval <- stats::pf(f_stat, df_model, df_residual, lower.tail = FALSE)
 
   # Update the residual standard error
   sum_reg$sigma <- mean(unlist(lapply(sum_regpvs, function(x) x$sigma)))
