@@ -4,7 +4,7 @@
 \alias{demean.data}
 \title{De-mean data}
 \usage{
-demean.data(dat, vars, fevar, wgt, allvars = TRUE, keep = "")
+demean.data(data, vars, fevar, wgt, allvars = TRUE, keep = "")
 }
 \description{
 De-mean data

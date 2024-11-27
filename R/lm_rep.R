@@ -41,19 +41,19 @@
 #'                       wgt="SENWGT", # weight: senate weights
 #'                       fevar=NULL, # no fixed-effects
 #'                       rwgts=paste0("RWGT",1:150), # name of replicate weights
-#'                       ncores=NULL, # automatic ncores
+#'                       ncores=2,
 #'                       study="PIRLS"
 #'                       )
 #' print(example1)
 #'
 #'
 #' # Example with time and country fixed-effects, dependent variable 1st plausible value
-#' example2 <- lm.lsa(ASRREA01 ~ 1 + PRESCH, # formula
+#' example2 <- lm.rep(ASRREA01 ~ 1 + PRESCH, # formula
 #'                       data=mini_pirls, # example data
 #'                       wgt="SENWGT", # weight: senate weights
 #'                       fevar=c("YEAR","IDCNTRY"), # fixed-effects variables
 #'                       rwgts=paste0("RWGT",1:150), # name of replicate weights
-#'                       ncores=NULL, # automatic ncores
+#'                       ncores=2,
 #'                       study="PIRLS"
 #'                       )
 #' print(example2)
@@ -70,14 +70,6 @@ lm.rep <- function(
     benchmark=TRUE,
     asList=FALSE
 ){
-  if(benchmark) if(!require(tictoc)) stop("if benchmark requires tictoc package installed")
-  if(is.null(ncores)){
-    library(parallel)
-  } else {
-    if(ncores>1) library(parallel)
-  }
-  library(dplyr)
-
   error.if.factor(formula)
 
   # Capture variables
@@ -89,7 +81,7 @@ lm.rep <- function(
   if(is.null(fevar)){
     data$TMP_VAR_WEIGHT <- data[[wgt]]
 
-    r0 <- lm(formula,
+    r0 <- stats::lm(formula,
              data=data,
              weights=TMP_VAR_WEIGHT)
   } else {
@@ -100,6 +92,7 @@ lm.rep <- function(
   }
 
   # Determine number of cores if not indicated
+  # put half of cores rounding down
   if(is.null(ncores)) ncores <- floor(detectCores()/2)
 
   # Estimate replicated weights
@@ -107,25 +100,15 @@ lm.rep <- function(
     if(benchmark) tictoc::tic("No parallel processing (cores available = 1)")
 
     # Remove the tibble characteristics to avoid errors
-    # Function .untidy from tucuyricuy package
-    # added here with permission from Andrés Christiansen
-    .untidy <- function(x){
-      out <- x
-      out <- lapply(1:ncol(x),function(X){as.vector(out[,X,drop = TRUE])})
-      out <- do.call(cbind.data.frame,out)
-      colnames(out) <- colnames(x)
-      out }
     # In addition, select only needed columns to use less RAM
     mat <- .untidy(data)[,c(fevar,depvar,indvar,wgt,rwgts)]
 
 
     # Calculate replicates per weight
     regs <- lapply(as.list(rwgts), function(wgt){
-      #message(wgt," ",appendLF = F)
-
       if(is.null(fevar)){
         mat$TMP_VAR_WEIGHT <- mat[[wgt]]
-        lm(formula,
+        stats::lm(formula,
            data=mat,
            weights=TMP_VAR_WEIGHT)
       } else {
@@ -146,9 +129,9 @@ lm.rep <- function(
     # In addition, select only needed columns to use less RAM
     mat <- .untidy(data)[,c(fevar,depvar,indvar,wgt,rwgts)]
 
-    cl <- makeCluster(ncores)
+    cl <- parallel::makeCluster(ncores)
 
-    clusterExport(cl, list("lm.fe",
+    parallel::clusterExport(cl, list("lm.fe",
                            "demean.data",
                            "formula",
                            "mat",
@@ -157,12 +140,11 @@ lm.rep <- function(
                            "error.if.factor"),
                   envir=environment())
 
-    regs <- parLapply(cl, as.list(rwgts), function(wgt) {
+    regs <- parallel::parLapply(cl, as.list(rwgts), function(wgt) {
 
       if(is.null(fevar)){
-        browser()
         mat$TMP_VAR_WEIGHT <- mat[[wgt]]
-        lm(formula,
+        stats::lm(formula,
            data=mat,
            weights=TMP_VAR_WEIGHT)
       } else {
@@ -172,7 +154,7 @@ lm.rep <- function(
               fevar = fevar)
       }
     })
-    stopCluster(cl)
+    parallel::stopCluster(cl)
     if(benchmark) tictoc::toc()
   }
 
