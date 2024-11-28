@@ -1,10 +1,3 @@
-# data = mini_pirls[mini_pirls$YEAR %in% "2011",]
-#
-# data$LANGUAGE <- as.factor(data$LANGUAGE)
-#
-# formula = ASRREA01 ~ 1 + EARLYLIT*factor(PRESCH) + ASMMAT01*LANGUAGE + LANGUAGE:factor(PRESCH)
-#
-
 recognize.factor.interaction <- function(data,
                                          formula,
                                          wgt=wgt,
@@ -121,7 +114,7 @@ if(length(factor.vars) > 0){
 formula_new <- stats::as.formula( paste(
   paste(depvar, collapse = " + "),
   as.character(formula[[1]]),
-  paste(c(as.character(attributes(terms(formula))$intercept),
+  paste(c(as.character(attributes(stats::terms(formula))$intercept),
     paste0(indvar.def, collapse = " + ")),
     collapse=" + ")))
 

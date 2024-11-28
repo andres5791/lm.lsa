@@ -1,4 +1,4 @@
-# lm.lsa
+# lm.lsa (EXTREMELY preliminary version! Use with caution)
 
 <!-- badges: start -->
 
@@ -13,18 +13,18 @@ Right now the package is in a EXTREMELY early version. Estimates, standard error
 ## What is included and missing?
 
 This is a very preliminary version. The following aspects are included:
+
 * lm.fe() function estimates a linear regression controlling by specified fixed-effects. It supports controlling by fixed-effects at different levels, for example: country and cycles, school (needs to specify both IDCNTRY and IDSCHOOL), student fixed-effects (need to pass to long format). 
 * lm.rep() function estimates a linear regression, with or without fixed-effects, using replicate weights. Supports TIMSS and PIRLS (jackknife with 2 replications per sampling zone), ICCS and ICILS (jackknife with 1 replication per sampling zone), PISA (BRR).
 * lm.lsa() function estimates a linear regression, with or without fixed-effects, using replicate weights and combining plausible values.
 * mini_pirls example dataset. Selection of random 20 schools per country per cycle of PIRLS (including 2001, 2006, joint-application with TIMSS 2011, 2016), and selected variables useful for testing.
-* lm.lsa and lm.rep support the use of parallel package to use multiple cores. In my tests it has decreased the time from 30% to 60% faster than without parallel processing, but it will depend on each one's CPU features. Use with caution, if too many cores are used it can get RAM intensive, for 16GB RAM it should be ok up to 2 or 4 cores.
+* lm.lsa and lm.rep support the use of parallel package to use multiple cores. In my tests it has decreased the time from 30% to 60% faster than without parallel processing, but it will depend on each one's CPU features. Use with caution, if too many cores are used it can get RAM intensive. On a computer with 16GB RAM, it should be OK up to 2 or 4 cores.
+* With version 0.0.2, factor variables are accepted and transformed to dummy variables. Either specify factor() in the formula or save the column as factor. Setting-up a reference value can be made via stats::contrasts(). Interactions are also supported now.
 
 The following aspects are planned to be included in the future, in orden of priority:
 
-* factor(x) and interaction predictors are not accepted, to be implemented. A workaround for now is to include them manually in the dataset.
 * no support for additional specifications (such as subset from lm), to be implemented.
-* right now, it needs the replicate weights to be included as variables within the dataset (some ILSA datasets do not include the variables and only include the sampling zone and replication code variables). In the future could be specifying any of it.
-* only supports linear regression (lm). Probably more typical model functions will be added in a future.
+* right now, it needs the replicate weights to be included as variables within the dataset (some ILSA datasets do not include the variables and only include the sampling zone and replication code variables). Is planned to eventually support either replication weights or jackknife zone/replicate code.
 * older cycles of TIMSS and PIRLS do not calculate the sampling variance using the full information, but only the first plausible value; this package implements the newer approach, using all plausible values. May or may not be included the older method in the future.
 
 ## Installation
@@ -32,8 +32,8 @@ The following aspects are planned to be included in the future, in orden of prio
 You can install the development version of lm.lsa from [GitHub](https://github.com/) with:
 
 ``` r
-
-
+# install.packages("devtools")
+devtools::install_github("andres5791/lm.lsa")
 ```
 
 ## Example #1: Country-level analyses (country FE)
