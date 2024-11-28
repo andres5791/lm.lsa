@@ -136,8 +136,7 @@ lm.rep <- function(
                            "formula",
                            "mat",
                            "fevar",
-                           "rwgts",
-                           "error.if.factor"),
+                           "rwgts"),
                   envir=environment())
 
     regs <- parallel::parLapply(cl, as.list(rwgts), function(wgt) {
