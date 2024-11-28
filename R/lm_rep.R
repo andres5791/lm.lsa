@@ -123,7 +123,11 @@ lm.rep <- function(
     if(benchmark) tictoc::tic("With parallel processing")
     # Remove the tibble characteristics to avoid errors
     # In addition, select only needed columns to use less RAM
-    mat <- .untidy(data)[,c(fevar,depvar,indvar,wgt,rwgts)]
+   nointeraction <- lapply(as.list(indvar), function(x){
+                            unlist(strsplit(x,":"))
+                            })
+    indvar.clean <- unique(unlist(nointeraction))
+    mat <- .untidy(data)[,c(fevar,depvar,indvar.clean,wgt,rwgts)]
 
     cl <- parallel::makeCluster(ncores)
 
