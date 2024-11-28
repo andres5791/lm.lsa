@@ -1,20 +1,22 @@
 Package: lm.lsa
 Title: Linear regression using international large-scale assessments
-Version: 0.0.2
+Version: 0.0.0.1
 Authors@R: 
     person("Andrés", "Strello", , "andres.strello@iea-hamburg.de",
     role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-5613-8338"))
 Description: Linear regression (based on lm()) using replicate weights and combining plausible values, based on IEA large-scale assessments and PISA.
-License: file LICENSE
+License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
+        license
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
 URL: https://github.com/andres5791/lm.lsa
 BugReports: https://github.com/andres5791/lm.lsa/issues
-Imports: 
-  dplyr,parallel,stats,tictoc,magrittr,tibble
-Depends: 
-    R (>= 3.4)
+Imports: dplyr,tictoc,parallel
+Depends: R (>= 2.10)
 LazyData: true
-LazyDataCompression: xz
+NeedsCompilation: no
+Packaged: 2024-11-20 14:58:28 UTC; andres.strello
+Author: Andrés Strello [aut, cre] (<https://orcid.org/0000-0002-5613-8338>)
+Maintainer: Andrés Strello <andres.strello@iea-hamburg.de>

@@ -29,7 +29,6 @@
 #' @export
 #'
 #' @import tictoc parallel
-#' @importFrom stats pt
 #'
 #' @examples
 #'
@@ -42,19 +41,19 @@
 #'                       wgt="SENWGT", # weight: senate weights
 #'                       fevar=NULL, # no fixed-effects
 #'                       rwgts=paste0("RWGT",1:150), # name of replicate weights
-#'                       ncores=2,
+#'                       ncores=NULL, # automatic ncores
 #'                       study="PIRLS"
 #'                       )
 #' print(example1)
 #'
 #'
 #' # Example with time and country fixed-effects, dependent variable 1st plausible value
-#' example2 <- lm.rep(ASRREA01 ~ 1 + PRESCH, # formula
+#' example2 <- lm.lsa(ASRREA01 ~ 1 + PRESCH, # formula
 #'                       data=mini_pirls, # example data
 #'                       wgt="SENWGT", # weight: senate weights
 #'                       fevar=c("YEAR","IDCNTRY"), # fixed-effects variables
 #'                       rwgts=paste0("RWGT",1:150), # name of replicate weights
-#'                       ncores=2,
+#'                       ncores=NULL, # automatic ncores
 #'                       study="PIRLS"
 #'                       )
 #' print(example2)
@@ -71,18 +70,26 @@ lm.rep <- function(
     benchmark=TRUE,
     asList=FALSE
 ){
+  if(benchmark) if(!require(tictoc)) stop("if benchmark requires tictoc package installed")
+  if(is.null(ncores)){
+    library(parallel)
+  } else {
+    if(ncores>1) library(parallel)
+  }
+  library(dplyr)
+
   error.if.factor(formula)
 
   # Capture variables
   depvar <- as.character(formula[[2]])
     if(length(depvar)>1) stop("Only one dependent variable supported")
-  indvar <- attr(stats::terms(formula), "term.labels")
+  indvar <- attr(terms(formula), "term.labels")
 
   # Calculate original replicate
   if(is.null(fevar)){
     data$TMP_VAR_WEIGHT <- data[[wgt]]
 
-    r0 <- stats::lm(formula,
+    r0 <- lm(formula,
              data=data,
              weights=TMP_VAR_WEIGHT)
   } else {
@@ -93,7 +100,6 @@ lm.rep <- function(
   }
 
   # Determine number of cores if not indicated
-  # put half of cores rounding down
   if(is.null(ncores)) ncores <- floor(detectCores()/2)
 
   # Estimate replicated weights
@@ -101,15 +107,25 @@ lm.rep <- function(
     if(benchmark) tictoc::tic("No parallel processing (cores available = 1)")
 
     # Remove the tibble characteristics to avoid errors
+    # Function .untidy from tucuyricuy package
+    # added here with permission from Andrés Christiansen
+    .untidy <- function(x){
+      out <- x
+      out <- lapply(1:ncol(x),function(X){as.vector(out[,X,drop = TRUE])})
+      out <- do.call(cbind.data.frame,out)
+      colnames(out) <- colnames(x)
+      out }
     # In addition, select only needed columns to use less RAM
     mat <- .untidy(data)[,c(fevar,depvar,indvar,wgt,rwgts)]
 
 
     # Calculate replicates per weight
     regs <- lapply(as.list(rwgts), function(wgt){
+      #message(wgt," ",appendLF = F)
+
       if(is.null(fevar)){
         mat$TMP_VAR_WEIGHT <- mat[[wgt]]
-        stats::lm(formula,
+        lm(formula,
            data=mat,
            weights=TMP_VAR_WEIGHT)
       } else {
@@ -130,9 +146,9 @@ lm.rep <- function(
     # In addition, select only needed columns to use less RAM
     mat <- .untidy(data)[,c(fevar,depvar,indvar,wgt,rwgts)]
 
-    cl <- parallel::makeCluster(ncores)
+    cl <- makeCluster(ncores)
 
-    parallel::clusterExport(cl, list("lm.fe",
+    clusterExport(cl, list("lm.fe",
                            "demean.data",
                            "formula",
                            "mat",
@@ -141,11 +157,12 @@ lm.rep <- function(
                            "error.if.factor"),
                   envir=environment())
 
-    regs <- parallel::parLapply(cl, as.list(rwgts), function(wgt) {
+    regs <- parLapply(cl, as.list(rwgts), function(wgt) {
 
       if(is.null(fevar)){
+        browser()
         mat$TMP_VAR_WEIGHT <- mat[[wgt]]
-        stats::lm(formula,
+        lm(formula,
            data=mat,
            weights=TMP_VAR_WEIGHT)
       } else {
@@ -155,7 +172,7 @@ lm.rep <- function(
               fevar = fevar)
       }
     })
-    parallel::stopCluster(cl)
+    stopCluster(cl)
     if(benchmark) tictoc::toc()
   }
 
@@ -208,16 +225,15 @@ lm.rep <- function(
   # Correct the F-statistic
   df_model <- sum_reg$fstatistic[["numdf"]] # Degrees of freedom for the model
   df_residual <- sum_reg$fstatistic[["dendf"]] # Residual degrees of freedom
-  rss <- sum(stats::residuals(reg)^2)                     # Residual sum of squares
-  tss <- sum((stats::model.response(
-    stats::model.frame(reg)) - mean(stats::model.response(stats::model.frame(reg))))^2) # Total sum of squares
+  rss <- sum(residuals(reg)^2)                     # Residual sum of squares
+  tss <- sum((model.response(model.frame(reg)) - mean(model.response(model.frame(reg))))^2) # Total sum of squares
   ess <- tss - rss                                 # Explained sum of squares (ESS)
   msr <- ess / df_model # Mean square for regression
   mse <- rss / df_residual # Mean square error (residuals)
   f_stat <- msr / mse # F-statistic
 
   sum_reg$fstatistic <- c(value = f_stat, numdf = df_model, dendf = df_residual)
-  sum_reg$fstatistic_pval <- stats::pf(f_stat, df_model, df_residual, lower.tail = FALSE)
+  sum_reg$fstatistic_pval <- pf(f_stat, df_model, df_residual, lower.tail = FALSE)
 
   # Update the residual standard error
   sum_reg$sigma <- sqrt(rss/df_residual)
@@ -227,9 +243,9 @@ lm.rep <- function(
   if(asList){
     theList <- list(
       sum.lm=sum_reg,
-      model_matrix=stats::model.matrix(reg),
-      model_frame=stats::model.frame(reg),
-      residuals=stats::residuals(reg)
+      model_matrix=model.matrix(reg),
+      model_frame=model.frame(reg),
+      residuals=residuals(reg)
     )
     return(theList)
   }

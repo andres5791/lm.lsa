@@ -60,7 +60,7 @@ example1 <- lm.lsa(ASRREA ~ 1 + PRESCH, # formula
                       fevar=NULL, # no fixed-effects
                       rwgts=paste0("RWGT",1:150), # name of replicate weights
                       pvs=list(ASRREA=paste0("ASRREA0",1:5)), # list with PVs variables
-                      ncores=2,
+                      ncores=NULL, # automatic ncores
                       study="PIRLS"
 )
 print(example1)
@@ -73,7 +73,7 @@ example2 <- lm.lsa(ASRREA ~ 1 + PRESCH, # formula
                       fevar=c("YEAR","IDCNTRY"), # fixed-effects variables
                       rwgts=paste0("RWGT",1:150), # name of replicate weights
                       pvs=list(ASRREA=paste0("ASRREA0",1:5)), # list with PVs variables
-                      ncores=2,
+                      ncores=NULL, # automatic ncores
                       study="PIRLS"
 )
 print(example2)
