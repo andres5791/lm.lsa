@@ -3,3 +3,4 @@
 ^ignoreCode$
 ^data-raw$
 ^run_codes.R
+^LICENSE\.md$

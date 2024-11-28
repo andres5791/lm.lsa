@@ -5,7 +5,7 @@ Authors@R:
     person("Andrés", "Strello", , "andres.strello@iea-hamburg.de",
     role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-5613-8338"))
-Description: Linear regression (based on lm()) using replicate weights and combining plausible values, based on IEA large-scale assessments and PISA.
+Description: Linear regression (based on lm()) using replicate weights and combining plausible values, specifically on IEA large-scale assessments and PISA.
 License: file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
