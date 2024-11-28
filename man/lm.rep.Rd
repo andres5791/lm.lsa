@@ -57,19 +57,19 @@ example1 <- lm.rep(ASRREA01 ~ 1 + PRESCH, # formula
                       wgt="SENWGT", # weight: senate weights
                       fevar=NULL, # no fixed-effects
                       rwgts=paste0("RWGT",1:150), # name of replicate weights
-                      ncores=NULL, # automatic ncores
+                      ncores=2,
                       study="PIRLS"
                       )
 print(example1)
 
 
 # Example with time and country fixed-effects, dependent variable 1st plausible value
-example2 <- lm.lsa(ASRREA01 ~ 1 + PRESCH, # formula
+example2 <- lm.rep(ASRREA01 ~ 1 + PRESCH, # formula
                       data=mini_pirls, # example data
                       wgt="SENWGT", # weight: senate weights
                       fevar=c("YEAR","IDCNTRY"), # fixed-effects variables
                       rwgts=paste0("RWGT",1:150), # name of replicate weights
-                      ncores=NULL, # automatic ncores
+                      ncores=2,
                       study="PIRLS"
                       )
 print(example2)
