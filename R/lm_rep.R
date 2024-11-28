@@ -61,8 +61,6 @@ lm.rep <- function(
     benchmark=TRUE,
     asList=FALSE
 ){
-  error.if.factor(formula)
-
   # Capture variables
   depvar <- as.character(formula[[2]])
     if(length(depvar)>1) stop("Only one dependent variable supported")
