@@ -67,8 +67,6 @@ lm.lsa <- function(
     ncores=NULL,
     benchmark=FALSE
 ){
-  error.if.factor(formula)
-
   ## Preamble ====================================================================
   # Capture variables
   depvar <- as.character(formula[[2]])
