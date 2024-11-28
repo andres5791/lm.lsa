@@ -31,8 +31,6 @@ lm.fe <- function(formula = y ~ x,
                   wgt=NULL,
                   fevar,
                   ...){
-  # error.if.factor(formula)
-
   # Weights of 1 if no weight is specified
   if(is.null(wgt)){
     data$TMP.VAR.WEIGHT <- 1
