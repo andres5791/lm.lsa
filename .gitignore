@@ -10,3 +10,4 @@ data-raw/
 lm.lsa.Rproj
 /*.tar.gz
 .Rcheck/
+R_work/

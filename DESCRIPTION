@@ -1,6 +1,6 @@
 Package: lm.lsa
 Title: Linear regression using international large-scale assessments
-Version: 0.0.2
+Version: 0.2
 Authors@R: c(
     person("Andrés", "Strello", , "andres.strello@iea-hamburg.de",
             role = c("aut", "cre"),
