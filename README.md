@@ -1,4 +1,4 @@
-# lm.lsa (EXTREMELY preliminary version! Use with caution)
+# lm.lsa (Version 0.2, BETA)
 
 <!-- badges: start -->
 
@@ -8,7 +8,7 @@ lm.lsa permits to estimate linear regressions (based on lm()) using ILSA data fr
 
 In addition, it supports the specification of fixed-effects, that is a common approach in econometrician analyses.
 
-Right now the package is in a EXTREMELY early version. Estimates, standard errors, and R-squared should be correct at least using TIMSS and PIRLS data. The other outputs component of summary.lm() are programmed but I have not tested their exact accuracy.
+Right now the package is in a very early version. Estimates, standard errors, and R-squared should be correct at least using TIMSS and PIRLS data. The other outputs component of summary.lm() are programmed but I have not tested their exact accuracy.
 
 ## What is included and missing?
 
@@ -18,8 +18,9 @@ This is a very preliminary version. The following aspects are included:
 * lm.rep() function estimates a linear regression, with or without fixed-effects, using replicate weights. Supports TIMSS and PIRLS (jackknife with 2 replications per sampling zone), ICCS and ICILS (jackknife with 1 replication per sampling zone), PISA (BRR).
 * lm.lsa() function estimates a linear regression, with or without fixed-effects, using replicate weights and combining plausible values.
 * mini_pirls example dataset. Selection of random 20 schools per country per cycle of PIRLS (including 2001, 2006, joint-application with TIMSS 2011, 2016), and selected variables useful for testing.
-* lm.lsa and lm.rep support the use of parallel package to use multiple cores. In my tests it has decreased the time from 30% to 60% faster than without parallel processing, but it will depend on each one's CPU features. Use with caution, if too many cores are used it can get RAM intensive. On a computer with 16GB RAM, it should be OK up to 2 or 4 cores.
-* With version 0.0.2, factor variables are accepted and transformed to dummy variables. Either specify factor() in the formula or save the column as factor. Setting-up a reference value can be made via stats::contrasts(). Interactions are also supported now.
+* lm.lsa and lm.rep support the use of parallel package to use multiple cores. In my tests it has decreased the time from 30% to 60% faster than without parallel processing, but it will depend on each one's CPU features. Use with caution, if too many cores are used it can get RAM intensive. On a computer with 16GB RAM, it should be OK up to 4 cores.
+* With version 0.2, factor variables are accepted and transformed to dummy variables. Either specify factor() in the formula or save the column as factor. Setting-up a reference value can be made via stats::contrasts(). 
+* Interactions are also supported using normal notation (either * or :)
 
 The following aspects are planned to be included in the future, in orden of priority:
 

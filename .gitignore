@@ -7,6 +7,7 @@
 .quarto
 ignoreCode/
 data-raw/
-run_codes.R
 lm.lsa.Rproj
+/*.tar.gz
+.Rcheck/
 R_work/
