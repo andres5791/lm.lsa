@@ -31,6 +31,10 @@ lm.fe <- function(formula = y ~ x,
                   wgt=NULL,
                   fevar,
                   ...){
+  # Move formula to formula if was a string
+  if(is.character(formula)) formula <- stats::as.formula(formula)
+  
+  
   # Weights of 1 if no weight is specified
   if(is.null(wgt)){
     data$TMP.VAR.WEIGHT <- 1
