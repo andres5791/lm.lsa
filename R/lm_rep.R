@@ -61,6 +61,9 @@ lm.rep <- function(
     benchmark=TRUE,
     asList=FALSE
 ){
+  # Move formula to formula if was a string
+  if(is.character(formula)) formula <- stats::as.formula(formula)
+  
   # Capture variables
   depvar <- as.character(formula[[2]])
     if(length(depvar)>1) stop("Only one dependent variable supported")
@@ -141,6 +144,8 @@ lm.rep <- function(
       
       if(is.null(fevar)){
         mat$TMP_VAR_WEIGHT <- mat[[wgt]]
+        environment(formula) <- environment()
+
         stats::lm(formula,
                   data=mat,
                   weights=TMP_VAR_WEIGHT)["coefficients"]
