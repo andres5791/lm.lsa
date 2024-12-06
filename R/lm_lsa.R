@@ -212,7 +212,7 @@ if(ncores > length(npvs)) ncores <- npvs
       gc()
 
       repmodel <- lm.rep(new_formula,
-                         data=data,
+                         data=mat,
                          wgt=wgt,
                          rwgts=rwgts,
                          fevar=fevar,
