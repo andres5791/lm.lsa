@@ -139,7 +139,7 @@ lm.lsa <- function(
 # determining number of cores
 # Number of cores
 if(is.null(ncores)) ncores <- floor(detectCores()/2)
-if(ncores > length(npvs)) ncores <- npvs  
+if(ncores > npvs) ncores <- npvs  
   
   
   if(ncores %in% c(0,1,NA)){
