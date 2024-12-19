@@ -11,9 +11,7 @@ demean.data <- function(data,
                         fevar,
                         wgt,
                         allvars = TRUE,
-                        keep=""){
-  # error.if.factor(formula)
-
+                        keep=NULL){
   # Pass to factor the fixed effect variables
   for(i in 1:length(fevar)) data[[fevar[i]]] <- as.factor(data[[fevar[i]]])
 
