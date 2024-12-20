@@ -76,11 +76,13 @@ lm.rep <- function(
     r0 <- stats::lm(formula,
              data=data,
              weights=TMP_VAR_WEIGHT)
+    attributes(r0$terms)$.Environment <- NULL
   } else {
     r0 <- lm.fe(formula,
                 data=data,
                 wgt=wgt,
                 fevar=fevar)
+    attributes(r0$terms)$.Environment <- NULL
   }
 
   # Determine number of cores if not indicated
@@ -90,52 +92,47 @@ lm.rep <- function(
   
 # Estimate replicated weights
   if(ncores %in% c(0,1,NA)){
-    if(benchmark) tictoc::tic("No parallel processing (cores available = 1)")
-    
     # Remove the tibble characteristics to avoid errors
     # In addition, select only needed columns to use less RAM
     nointeraction <- lapply(as.list(indvar), 
                             function(x) unlist(strsplit(x,":")))
     nofactor <- gsub("^factor\\((.*)\\)$", "\\1", unlist(nointeraction))
     indvar.clean <- unique(nofactor)
-    mat <- .untidy(data)[,c(fevar,depvar,indvar.clean,wgt,rwgts)]
+    data <- .untidy(data)[,c(fevar,depvar,indvar.clean,wgt,rwgts)]
     
     regs <- lapply(1:length(rwgts), function(i) NULL)
+    
     for(i in 1:length(rwgts)){
       if(is.null(fevar)){
-        mat$TMP_VAR_WEIGHT <- mat[[rwgts[i]]]
+        data$TMP_VAR_WEIGHT <- data[[rwgts[i]]]
         regs[[i]] <- stats::lm(formula,
-                               data=mat,
+                               data=data,
                                weights=TMP_VAR_WEIGHT)["coefficients"]
       } else {
         regs[[i]] <- lm.fe(formula,
-                           data=mat,
+                           data=data,
                            wgt=wgt,
-                           fevar=fevar
-        )["coefficients"]
+                           fevar=fevar)["coefficients"]
       }
     }
-    if(benchmark) tictoc::toc()
-    
   } else {
     # Calculate replicates per weight, parallel
     message("Number of cores used: ",ncores)
     
-    if(benchmark) tictoc::tic("With parallel processing")
     # Remove the tibble characteristics to avoid errors
     # In addition, select only needed columns to use less RAM
     nointeraction <- lapply(as.list(indvar), 
                             function(x) unlist(strsplit(x,":")))
     nofactor <- gsub("^factor\\((.*)\\)$", "\\1", unlist(nointeraction))
     indvar.clean <- unique(nofactor)
-    mat <- .untidy(data)[,c(fevar,depvar,indvar.clean,wgt,rwgts)]
+    data <- .untidy(data)[,c(fevar,depvar,indvar.clean,wgt,rwgts)]
     
     cl <- parallel::makeCluster(ncores)
     
     parallel::clusterExport(cl, list("lm.fe",
                                      "demean.data",
                                      "formula",
-                                     "mat",
+                                     "data",
                                      "fevar",
                                      "rwgts"),
                             envir=environment())
@@ -143,21 +140,20 @@ lm.rep <- function(
     regs <- parallel::parLapply(cl, as.list(rwgts), function(wgt) {
       
       if(is.null(fevar)){
-        mat$TMP_VAR_WEIGHT <- mat[[wgt]]
+        data$TMP_VAR_WEIGHT <- data[[wgt]]
         environment(formula) <- environment()
 
         stats::lm(formula,
-                  data=mat,
+                  data=data,
                   weights=TMP_VAR_WEIGHT)["coefficients"]
       } else {
         lm.fe(formula,
-              data = mat,
+              data = data,
               wgt = wgt,
               fevar = fevar)["coefficients"]
       }
     })
     parallel::stopCluster(cl)
-    if(benchmark) tictoc::toc()
   }
   
   

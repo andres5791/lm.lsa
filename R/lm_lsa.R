@@ -131,7 +131,7 @@ lm.lsa <- function(
     
   }
   
-  mat <- .untidy(data)[,c(fevar,allvar,wgt,rwgts)]
+  data <- .untidy(data)[,c(fevar,allvar,wgt,rwgts)]
   
   
 ## Compute the model per plausible value =======================================
@@ -165,7 +165,7 @@ if(ncores > npvs) ncores <- npvs
       gc()
       
       repmodel <- lm.rep(new_formula,
-                         data=mat,
+                         data=data,
                          wgt=wgt,
                          rwgts=rwgts,
                          fevar=fevar,
@@ -173,19 +173,20 @@ if(ncores > npvs) ncores <- npvs
                          study=study,
                          benchmark=benchmark,
                          asList=FALSE)
+      attributes(repmodel$terms)$.Environment <- NULL
       gc() # Make sure we dump the unused RAM before continuing...
       repmodel
     })
   } else {
     ## Parallel version
-    message("ncores = ",ncores)
+    message("Number of cores = ",ncores)
     
     # Open the connection
     cl <- parallel::makeCluster(ncores)
     parallel::clusterExport(cl, list("lm.fe",
                                      "demean.data",
                                      "formula",
-                                     "mat",
+                                     "data",
                                      "fevar",
                                      "rwgts",
                                      "lm.rep",
@@ -212,14 +213,15 @@ if(ncores > npvs) ncores <- npvs
       gc()
 
       repmodel <- lm.rep(new_formula,
-                         data=mat,
-                         wgt=wgt,
-                         rwgts=rwgts,
-                         fevar=fevar,
-                         study=study,
-                         benchmark=benchmark,
-                         asList=FALSE,
-                         ncores=1)
+                         data = data,
+                         wgt = wgt,
+                         rwgts = rwgts,
+                         fevar = fevar,
+                         study = study,
+                         benchmark = benchmark,
+                         asList = FALSE,
+                         ncores = 1)
+      attributes(repmodel$terms)$.Environment <- NULL
       gc() # Make sure we dump the unused RAM before continuing...
       repmodel
     })

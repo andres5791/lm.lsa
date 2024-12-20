@@ -1,6 +1,6 @@
 Package: lm.lsa
 Title: Linear regression using international large-scale assessments
-Version: 0.3
+Version: 0.3.1
 Authors@R: c(
     person("Andrés", "Strello", , "andres.strello@iea-hamburg.de",
             role = c("aut", "cre"),
@@ -17,7 +17,7 @@ RoxygenNote: 7.3.1
 URL: https://github.com/andres5791/lm.lsa
 BugReports: https://github.com/andres5791/lm.lsa/issues
 Imports: dplyr,parallel,stats,tictoc,magrittr,tibble
-Depends: R (>= 3.4)
+Depends: R (>= 3.5)
 LazyData: true
 LazyDataCompression: xz
 NeedsCompilation: no
